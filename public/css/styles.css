@@ -4,8 +4,8 @@
   --color1: #F08E6A;
   --color2: #600635;
   --color3: #FBEBDA;
-  --color4: #2D1115;
-  --color5: #5471a7;
+  --color4: #270f13;
+  --color5: #4a5c80;
   --main-font: "Fira Sans", sans-serif;
 } 
 
@@ -19,6 +19,7 @@
 body {
   font-family: var(--main-font);
   margin: 0%;
+  color: var(--color4);
 }
 
 main, footer {
