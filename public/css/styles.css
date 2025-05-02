@@ -1,6 +1,214 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Roboto+Slab:wght@100..900&display=swap');
+
+:root {
+  --color1: #F08E6A;
+  --color2: #600635;
+  --color3: #FBEBDA;
+  --color4: #2D1115;
+  --color5: #5471a7;
+  --main-font: "Fira Sans", sans-serif;
+} 
+
 /******* Change Box Model ***************/
 *,
 *:before,
 *:after {
   box-sizing: border-box;
+}
+
+body {
+  font-family: var(--main-font);
+  margin: 0%;
+}
+
+main, footer {
+  margin: 10px;
+}
+
+h1 {
+  font-size: 25px;
+  margin: 30px auto;
+}
+
+#top-header {
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  padding: 5px;
+  padding-bottom: 30px;
+}
+
+.siteName a {
+  text-decoration: none;
+  color: var(--color4);
+  font-weight: 800;
+  font-size: 40px;
+}
+
+#tools a {
+  text-decoration: none;
+  color: var(--color4);
+}
+
+nav {
+  background-color: var(--color2);
+  color: var(--color3);
+  font-size: 20px;
+}
+
+nav ul {
+  display: flex;
+  justify-content: space-between;
+  padding: 0px;
+}
+
+nav li {
+  list-style: none;
+  padding: 2%;
+}
+
+.dmc-img img {
+  width: 80%;
+  margin: 10% 5% auto 15%;
+}
+
+.adv-spotlight {
+  background-color: rgba(255, 255, 255, 0.5);
+  width: 172px;
+  color: var(--color5);
+  margin-left: 10px;
+  position: absolute;
+}
+
+.adv-spotlight h2 {
+  font-size: 25px;
+  margin: 0%;
+  
+}
+
+.adv-spotlight p {
+  margin: 2%;
+  font-weight: 700;
+  
+}
+
+.adv-spotlight img{
+  width: 130px;
+}
+
+.del-reviews {
+  margin-top: 10%;
+}
+
+.del-reviews ul {
+  padding: auto 5%;
+  padding-left: 20px;
+}
+
+.del-reviews li {
+  margin-bottom: 10px;
+}
+
+.upgrades {
+  margin: 40px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+}
+
+.upgrades div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+
+.upgrades h2 {
+  grid-column: 1/3;
+}
+
+.upgrade-img {
+  background-color: rgb(19, 191, 221);
+  height: 90px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid var(--color1);
+}
+
+.upgrades a {
+  color: var(--color5);
+  font-weight: 700;
+}
+
+@media (min-width: 40em) {
+
+  html {
+    background-image: url("../images/site/small_check.jpg");
+    width: 100%;
+  }
+
+  body {
+    margin: 5% 10%;
+    background-color: white;
+    z-index: -2;
+    border: 5px solid var(--color1);
+    border-radius: 10px;
+  }
+
+  h1 {
+    font-size: 35px;
+  }
+
+  .dmc-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dmc-img img {
+    width: 70%;
+    margin: 0%;
+  }
+
+  nav {
+    margin: auto 10px;
+  }
+
+  nav ul {
+    justify-content: space-evenly;
+  }
+
+  nav li{
+    padding: 5px;
+  }
+
+  #top-header {
+    padding-top: 30px;
+    padding-bottom: 15px;
+  }
+
+  .adv-spotlight img{
+    margin-top: 20px;
+  }
+
+  .adv-spotlight {
+    margin: 30px auto auto 50px;
+  }
+
+  .del-reviews, .upgrades {
+    margin-top: 5%;
+  }
+
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 5%;
+  }
+
+  .upgrades {
+    grid-row: 1/2;
+    width: 100%;
+  }
 }
