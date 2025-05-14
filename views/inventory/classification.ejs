@@ -1,0 +1,12 @@
+<!-- determine if a "title" variable exists. -->
+<% if (title) { %>
+<!-- if the variable exists, it is displayed within an <h1> element. -->
+<h1><%= title %></h1>
+<% } else {
+  // redirects the response object to the default index route, to deliver the home view.
+  res.redirect('/')
+} %>
+
+<%- grid %>
+
+<%# messages() %>

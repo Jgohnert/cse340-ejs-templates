@@ -53,7 +53,6 @@ h1 {
 
 nav {
   background-color: var(--color2);
-  color: var(--color3);
   font-size: 20px;
 }
 
@@ -66,6 +65,11 @@ nav ul {
 nav li {
   list-style: none;
   padding: 2%;
+}
+
+nav a {
+  color: var(--color3);
+  text-decoration: none;
 }
 
 .dmc-img img {

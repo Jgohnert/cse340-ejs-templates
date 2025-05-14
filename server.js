@@ -11,6 +11,8 @@ const expressLayouts = require("express-ejs-layouts");
 const env = require("dotenv").config();
 const app = express();
 const static = require("./routes/static");
+const baseController = require("./controllers/baseController");
+const inventoryRoute = require("./routes/inventoryRoute")
 
 /* ***********************
  * View Engine and Templates
@@ -37,9 +39,15 @@ app.use(static);
 // "/" - This is route being watched. It indicates the base route of the application or the route which has no specific resource requested.
 // res.render() - The "res" is the response object, while "render()" is an Express function that will retrieve the specified view - "index" - to be sent back to the browser.
 // {title: "Home" } - The curly braces are an object (treated like a variable), which holds a name - value pair. This object supplies the value that the "head" partial file expects to receive. The object is passed to the view.
-app.get("/", function(req, res) {
-  res.render("index", {title: "home"})
-});
+app.get("/", baseController.buildHome)
+
+// Inventory routes
+// composed of three elements:
+// 1. app.use() is an Express function that directs the application to use the resources passed in as parameters.
+// 2. /inv is a keyword in our application, indicating that a route that contains this word will use this route file to work with inventory-related processes.
+// 3. inventoryRoute is the variable representing the inventoryRoute.js file which was required
+// any route that starts with /inv will then be redirected to the inventoryRoute.js file, to find the rest of the route in order to fulfill the request.
+app.use("/inv", inventoryRoute)
 
 /* ***********************
  * Local Server Information
