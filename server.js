@@ -12,7 +12,8 @@ const env = require("dotenv").config();
 const app = express();
 const static = require("./routes/static");
 const baseController = require("./controllers/baseController");
-const inventoryRoute = require("./routes/inventoryRoute")
+const inventoryRoute = require("./routes/inventoryRoute");
+const utilities = require("./utilities/"); // is the the index.js file in the utilities folder
 
 /* ***********************
  * View Engine and Templates
@@ -36,18 +37,49 @@ app.use(static);
 
 // Index route
 // app.get - The express application will watch the "get" object, within the HTTP Request, for a particular route.
-// "/" - This is route being watched. It indicates the base route of the application or the route which has no specific resource requested.
-// res.render() - The "res" is the response object, while "render()" is an Express function that will retrieve the specified view - "index" - to be sent back to the browser.
-// {title: "Home" } - The curly braces are an object (treated like a variable), which holds a name - value pair. This object supplies the value that the "head" partial file expects to receive. The object is passed to the view.
-app.get("/", baseController.buildHome)
+// "/" - This is route being watched. It indicates the base route of the application or the route which has no 
+// specific resource requested.
+// utilities.handleErrors(baseController.buildHome) - the middleware function that catches any errors generated
+app.get("/", utilities.handleErrors(baseController.buildHome));
 
 // Inventory routes
 // composed of three elements:
 // 1. app.use() is an Express function that directs the application to use the resources passed in as parameters.
-// 2. /inv is a keyword in our application, indicating that a route that contains this word will use this route file to work with inventory-related processes.
+// 2. /inv is a keyword in our application, indicating that a route that contains this word will use this 
+// route file to work with inventory-related processes.
 // 3. inventoryRoute is the variable representing the inventoryRoute.js file which was required
-// any route that starts with /inv will then be redirected to the inventoryRoute.js file, to find the rest of the route in order to fulfill the request.
-app.use("/inv", inventoryRoute)
+// any route that starts with /inv will then be redirected to the inventoryRoute.js file, to find the rest 
+// of the route in order to fulfill the request.
+app.use("/inv", inventoryRoute);
+
+// File Not Found Route - must be last route in list
+app.use(async (req, res, next) => {
+  next({status: 404, message: 'Sorry, we appear to have lost that page.'});
+})
+
+/* ***********************
+* Express Error Handler
+* Place after all other middleware
+*************************/
+// app.use is an Express function, which accepts the default Express arrow function to be used with errors.
+app.use(async (err, req, res, next) => {
+  // builds the navigation bar for the error view.
+  let nav = await utilities.getNav();
+  // a console statement to show the route and error that occurred. This is helpful to you to know what 
+  // the client was doing when the error occurred.
+  console.error(`Error at: "${req.originalUrl}": ${err.message}`);
+  //  this line checks to see if the status code is 404. If so, the default error message - "File Not Found" - is assigned to the "message" property. If it is anything else, a generic message is used.
+  if(err.status == 404){ message = err.message} else {message = 'Oh no! There was a crash. Maybe try a different route?'}
+  // calls the "error.ejs" view
+  res.render("errors/error", {
+    // sets the value of the "title" for the view. It will use the status code or "Server Error" as the 
+    // title if no status code is set.
+    title: err.status || 'Server Error',
+    message,
+    // sets the navigation bar for use in the error view.
+    nav
+  });
+})
 
 /* ***********************
  * Local Server Information
@@ -60,5 +92,5 @@ const host = process.env.HOST;
  * Log statement to confirm server operation
  *************************/
 app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
+  console.log(`app listening on ${host}:${port}`);
 });
