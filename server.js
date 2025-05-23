@@ -13,7 +13,7 @@ const app = express();
 const static = require("./routes/static");
 const baseController = require("./controllers/baseController");
 const inventoryRoute = require("./routes/inventoryRoute");
-const utilities = require("./utilities/"); // is the the index.js file in the utilities folder
+const utilities = require("./utilities/"); // is the index.js file in the utilities folder
 
 /* ***********************
  * View Engine and Templates
@@ -69,7 +69,8 @@ app.use(async (err, req, res, next) => {
   // the client was doing when the error occurred.
   console.error(`Error at: "${req.originalUrl}": ${err.message}`);
   //  this line checks to see if the status code is 404. If so, the default error message - "File Not Found" - is assigned to the "message" property. If it is anything else, a generic message is used.
-  if(err.status == 404){ message = err.message} else {message = 'Oh no! There was a crash. Maybe try a different route?'}
+  if(err.status == 404){ message = err.message}
+  else {message = 'Oh no! There was a crash. Maybe try a different route?'}
   // calls the "error.ejs" view
   res.render("errors/error", {
     // sets the value of the "title" for the view. It will use the status code or "Server Error" as the 

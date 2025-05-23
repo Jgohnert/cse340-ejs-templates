@@ -6,6 +6,7 @@
   --color3: #FBEBDA;
   --color4: #270f13;
   --color5: #4a5c80;
+  --color6: #13bfdd;
   --main-font: "Fira Sans", sans-serif;
 } 
 
@@ -22,8 +23,12 @@ body {
   color: var(--color4);
 }
 
-main, footer {
-  margin: 10px;
+main {
+  margin: 0px 10px;
+}
+
+footer {
+  padding: 20px 10px;
 }
 
 h1 {
@@ -70,6 +75,10 @@ nav li {
 nav a {
   color: var(--color3);
   text-decoration: none;
+}
+
+nav a:hover {
+  text-decoration: underline;
 }
 
 .dmc-img img {
@@ -133,7 +142,7 @@ nav a {
 }
 
 .upgrade-img {
-  background-color: rgb(19, 191, 221);
+  background-color: var(--color6);
   height: 90px;
   width: 100%;
   display: flex;
@@ -145,6 +154,55 @@ nav a {
 .upgrades a {
   color: var(--color5);
   font-weight: 700;
+}
+
+#inv-display {
+  padding: 0%;
+  list-style: none;
+  text-align: center;
+}
+
+#inv-display li {
+  margin: 5% 25%;
+  padding-bottom: 15px;
+  border: 2px solid var(--color1);
+  border-radius: 2%;
+}
+
+#inv-display img {
+  width: 100%;
+}
+
+#inv-display a {
+  text-decoration: none;
+  color: var(--color4);
+  margin: 0px 2%;
+}
+
+#inv-display a:hover {
+  text-decoration: underline;
+}
+
+#inv-display .thumb-img {
+  margin: 0px;
+}
+
+#vehicle-display {
+  padding: 0%;
+}
+
+#vehicle-display img {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+#vehicle-display li {
+  list-style: none;
+  margin-bottom: 5px;
+}
+
+.imp-info {
+  font-size: 25px;
 }
 
 @media (min-width: 40em) {
@@ -216,4 +274,28 @@ nav a {
     grid-row: 1/2;
     width: 100%;
   }
+
+  #inv-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  justify-items: center;
+}
+
+#inv-display li {
+  margin: 10%;
+  width: 200px;
+  
+}
+
+#vehicle-display {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 20px;
+  margin-left: 100px;
+}
+
+#vehicle-display .vehicle-img {
+  grid-row: 1/7;
+  margin: 0%;
+}
 }

@@ -11,14 +11,14 @@ const Util = {}
 Util.getNav = async function(req, res, next) {
   // calls the getClassifications() function from the inventory-model file and stores 
   // the returned resultset into the data variable.
-  let data = await invModel.getClassifications()
-  console.log(data)
-  let list = "<ul>"
+  let data = await invModel.getClassifications();
+  console.log(data);
+  let list = "<ul>";
   // a new list item, containing a link to the index route, is added to the unordered list.
   list += '<li><a href="/" title="Home page">Home</a></li>'
   // uses a forEach loop to move through the rows of the data array one at a time.
   data.rows.forEach((row) => {
-    list += "<li>"
+    list += "<li>";
     // the classification_id value found in the row from the array. It is being added into the link route.
     // the classification_name value found in the row from the array. It is being added into the title attribute.
     // the classification_name from the row being displayed between the opening and closing HTML anchor tags. 
@@ -31,7 +31,7 @@ Util.getNav = async function(req, res, next) {
       ' vehicles">' +
       row.classification_name +
       "</a>"
-    list += "</li>"
+    list += "</li>";
   })
   list += "</ul>"
   return list
@@ -50,11 +50,10 @@ Util.buildClassificationGrid = async function(data){
       grid += '<li>'
       grid +=  '<a href="../../inv/detail/'+ vehicle.inv_id 
       + '" title="View ' + vehicle.inv_make + ' '+ vehicle.inv_model 
-      + 'details"><img src="' + vehicle.inv_thumbnail 
+      + 'details" class="thumb-img"><img src="' + vehicle.inv_thumbnail 
       +'" alt="Image of '+ vehicle.inv_make + ' ' + vehicle.inv_model 
       +' on CSE Motors" /></a>'
       grid += '<div class="namePrice">'
-      grid += '<hr />'
       grid += '<h2>'
       grid += '<a href="../../inv/detail/' + vehicle.inv_id +'" title="View ' 
       + vehicle.inv_make + ' ' + vehicle.inv_model + ' details">' 
@@ -72,11 +71,38 @@ Util.buildClassificationGrid = async function(data){
   return grid
 }
 
+
+//takes the specific vehicle's information and wrap it up in HTML to deliver to the view,
+Util.buildvehicleGrid = async function(data){
+  let grid = "";
+  if (data.length > 0) {
+    const vehicle = data[0];
+    grid = `
+      <ul id="vehicle-display">
+        <li class="vehicle-img">
+          <a href="../../inv/detail/${vehicle.inv_id}" title="View ${vehicle.inv_make} ${vehicle.inv_model} details">
+            <img src="${vehicle.inv_image}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model} on CSE Motors" />
+          </a>
+        </li>
+        <li class="imp-info"><b>Make:</b> ${vehicle.inv_make}</li>
+        <li class="imp-info"><b>Model:</b> ${vehicle.inv_model}</li>
+        <li class="imp-info"><b>Year:</b> ${vehicle.inv_year}</li>
+        <li class="imp-info"><b>Price:</b> $${new Intl.NumberFormat('en-US').format(vehicle.inv_price)}</li>
+        <li><b>Color:</b> ${vehicle.inv_color}</li>
+        <li><b>Mileage:</b> ${new Intl.NumberFormat('en-US').format(vehicle.inv_miles)}</li>
+        <li><b>Description:</b> ${vehicle.inv_description}</li>
+      </ul>`;
+  } else {
+    grid += '<p class="notice">Sorry, no matching vehicle could be found.</p>';
+  }
+  return grid;
+}
+
 /* ****************************************
  * Middleware For Handling Errors
  * Wrap other function in this for 
  * General Error Handling
  **************************************** */
-Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
+Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
 module.exports = Util

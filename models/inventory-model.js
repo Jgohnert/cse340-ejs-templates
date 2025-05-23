@@ -1,5 +1,5 @@
 // imports the database connection file (named index.js) from the database folder which is one level above the current file.
-const pool = require("../database/")
+const pool = require("../database/");
 
 /* ***************************
  *  Get all classification data
@@ -27,15 +27,32 @@ async function getInventoryByClassificationId(classification_id) {
       ON i.classification_id = c.classification_id 
       WHERE i.classification_id = $1`,
       [classification_id]
-    )
+    );
     // sends the data, as an array of all the rows, back to where the function was called (in the controller).
     return data.rows
   } catch (error) {
-    console.error("getclassificationsbyid error " + error)
+    console.error("getclassificationsbyid error " + error);
+  }
+}
+
+/* ***************************
+ *  a function to retrieve the data for a specific 
+ *  vehicle in inventory, based on the inventory id
+ * ************************** */
+async function getVehicleByInvId(vehicle_id) {
+  try {
+    const data = await pool.query(
+      `SELECT * FROM public.inventory AS i 
+      JOIN public.classification AS c 
+      ON i.classification_id = c.classification_id
+      WHERE i.inv_id = $1`,
+      [vehicle_id]
+    )
+    return data.rows
+  } catch (error) {
+    console.error("getvehiclebyid error " + error);
   }
 }
 
 // exports the function for use elsewhere.
-module.exports = {getClassifications}
-
-module.exports = {getClassifications, getInventoryByClassificationId};
+module.exports = {getClassifications, getInventoryByClassificationId, getVehicleByInvId}
