@@ -5,6 +5,9 @@
 /* ***********************
  * Require Statements
  *************************/
+const session = require("express-session");
+const pool = require('./database/');
+
 const express = require("express");
 // we tell the application to require express-ejs-layouts, so it can be used.
 const expressLayouts = require("express-ejs-layouts");
@@ -14,6 +17,54 @@ const static = require("./routes/static");
 const baseController = require("./controllers/baseController");
 const inventoryRoute = require("./routes/inventoryRoute");
 const utilities = require("./utilities/"); // is the index.js file in the utilities folder
+const accountRoute = require("./routes/accountRoute");
+const bodyParser = require("body-parser");
+
+/* ***********************
+ * Middleware
+ * ************************/
+// invokes the app.use() function and indicates the session is to be applied.
+// app.use() applies whatever is being invoked throughout the entire application.
+ app.use(session({
+  // store is referring to where the session data will be stored. 
+  // creating a new session table in our PostgreSQL database using the "connect-pg-simple" package,
+  store: new (require('connect-pg-simple')(session))({
+    // tells the session to create a "session" table in the database if it does not already exist.
+    createTableIfMissing: true,
+    // uses our database connection pool to interact with the database server.
+    pool,
+  }),
+  // indicates a "secret" name - value pair that will be used to protect the session.
+  secret: process.env.SESSION_SECRET,
+  // This session for the session in the database is typically "false". But, because we are 
+  // using "flash" messages we need to resave the session table after each message, so it must be set to "true".
+  resave: true,
+  // important to the creation process when the session is first created.
+  saveUninitialized: true,
+  // this is the "name" we are assigning to the unique "id" that will be created for each session.
+  // In order to maintain "state", the session id will be stored into a cookie and passed back and forth from the server to the browser.
+  name: 'sessionId',
+}))
+
+// Express Messages Middleware
+// requires the connect-flash package, within an app.use function, making it accessible throughout the application.
+app.use(require('connect-flash')())
+// app.use is applied and a function is passed in as a parameter. The funtion accepts the request, response and next objects as parameters.
+app.use(function(req, res, next){
+  // The express-messages package is required as a function. The function accepts the request and response objects as parameters. 
+  // The functionality of the this function is assigned to the response object, using the "locals" option and a name of "messages". 
+  // This allows any message to be stored into the response, making it available in a view.
+  res.locals.messages = require('express-messages')(req, res)
+  // calls the "next()" function, passing control to the next piece of middleware in the application. Ultimately, this allows messages 
+  // to be set, then pass on to the next process.
+  next()
+})
+
+// tells the express application to use the body parser to work with JSON data
+app.use(bodyParser.json())
+// tells the express application to read and work with data sent via a URL as well as from a form, stored in the request object's 
+// body. The "extended: true" object is a configuration that allows rich objects and arrays to be parsed.
+app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
 /* ***********************
  * View Engine and Templates
@@ -51,6 +102,9 @@ app.get("/", utilities.handleErrors(baseController.buildHome));
 // any route that starts with /inv will then be redirected to the inventoryRoute.js file, to find the rest 
 // of the route in order to fulfill the request.
 app.use("/inv", inventoryRoute);
+
+// Account routes
+app.use("/account", accountRoute);
 
 // File Not Found Route - must be last route in list
 app.use(async (req, res, next) => {

@@ -1,0 +1,27 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else {
+  res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (locals.errors) { %>
+  <ul class="notice">
+    <% locals.errors.array().forEach(error => { %>
+      <li><%= error.msg %></li>
+    <% }) %>
+  </ul>
+<% } %>
+
+<form class="forms" action="/inv/add-classification" method="post">
+  <fieldset>
+  <div class="form-inputs">
+    <label>Enter Classification Name
+      <p>Name must be alphabetic characters only. It cannot contain a space or special character of any kind</p>
+      <input type="text" id="classId" name="classification_name" pattern="^[A-Za-z]+$" required value="<%= locals.classification_name %>">
+    </label>
+  </div>
+  </fieldset>
+  <input class="form-button" type="submit" value="Add Classification">
+</form>

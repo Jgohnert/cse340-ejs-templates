@@ -6,6 +6,31 @@ const router = new express.Router();
 // brings the inventory controller into this router document's scope to be used.
 const invController = require("../controllers/invController");
 const utilities = require("../utilities/");
+const invValidate = require('../utilities/inventory-validation');
+
+// route that builds the inventory management view on the management.ejs file.
+router.get("/", utilities.handleErrors(invController.buildManagementView));
+
+router.get("/add-classification", utilities.handleErrors(invController.buildAddClassificationView));
+
+router.get("/add-inventory", utilities.handleErrors(invController.buildAddInventoryView));
+
+
+// Process the new classification id data
+router.post(
+  "/add-classification",
+  invValidate.classificationRules(),
+  invValidate.checkClassData,
+  utilities.handleErrors(invController.newClassificationId)
+)
+
+// Process the new classification id data
+router.post(
+  "/add-inventory",
+  invValidate.inventoryRules(),
+  invValidate.checkInvData,
+  utilities.handleErrors(invController.newVehicleInfo)
+)
 
 // Route to build inventory by classification view
 // the route, which is divided into three elements:

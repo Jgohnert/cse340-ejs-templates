@@ -11,6 +11,11 @@ baseController.buildHome = async function(req, res){
   // calls a getNav() function that will be found in the utilities > index.js file. 
   // The results, when returned, will be stored into the nav variable.
   const nav = await utilities.getNav();
+  //******
+  // below is a flash message line. It delivers a message to the homepage.
+  //if you need to send a message from a controller to a view, when using res.render(), or res.redirect(), you can.
+  // req.flash("notice", "This is a flash message.");
+  //******
   // is the Express command to use EJS to send the index view back to the client, 
   // using the response object. The index view will need the "title" name - value 
   // pair, and the nav variable. The nav variable will contain the string of HTML 
