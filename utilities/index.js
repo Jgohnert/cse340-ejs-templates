@@ -3,6 +3,9 @@ const invModel = require("../models/inventory-model")
 // creates an empty Util object.
 const Util = {}
 
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
+
 /* ************************
  * Constructs the nav HTML unordered list
  ************************** */
@@ -104,5 +107,58 @@ Util.buildvehicleGrid = async function(data){
  * General Error Handling
  **************************************** */
 Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+
+/* ****************************************
+* Middleware to check token validity
+**************************************** */
+// begins the function and assigns it to the "checkJWTToken" property of the Util object.
+Util.checkJWTToken = (req, res, next) => {
+//  an "if" check to see if the JWT cookie exists.
+  if (req.cookies.jwt) {
+  // if the cookie exists, uses the jsonwebtoken "verify" function to check the validity of the token.
+  jwt.verify(
+   // the JWT token from the cookie.
+   req.cookies.jwt,
+   //  the "secret" which is stored in the .env file.
+   process.env.ACCESS_TOKEN_SECRET,
+   //  the callback function (which returns an error or the account data from the token payload).
+   function (err, accountData) {
+    // an "if" to see if an error exists.
+    if (err) {
+     // if an error, meaning the token is not valid, a flash message is created.
+     req.flash("Please log in")
+     //  the cookie is deleted.
+     res.clearCookie("jwt")
+     //  redirects to the "login" route, so the client can "login".
+     return res.redirect("/account/login")
+    }
+    // adds the accountData object to the response.locals object to be forwarded on through the rest of this request
+    res.locals.accountData = accountData
+    // adds "loggedin" flag with a value of "1" (meaning true) to the response.locals object to be forwarded on through the rest of this request
+    res.locals.loggedin = 1
+    // calls the "next()" function directing the Express server to move to the next step in the application's work flow.
+    next()
+   })
+ } else {
+  // calls the next() function, to move forward in the application process. In this case, there is no JWT cookie, so the process moves to the next step.
+  next()
+ }
+}
+
+/* ****************************************
+ *  Check Login
+ * ************************************ */
+// creates the function and assigns it to the "Util" object with a name of "checkLogin".
+ Util.checkLogin = (req, res, next) => {
+  // check to see if the login flag exists and is "true" in the response object.
+  if (res.locals.loggedin) {
+    // allows the process of the application to continue by using the "next()" function.
+    next()
+  } else {
+    req.flash("notice", "Please log in.")
+    // redirects to the login route, because the login flag does not exist.
+    return res.redirect("/account/login")
+  }
+ }
 
 module.exports = Util

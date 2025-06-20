@@ -19,6 +19,7 @@ const inventoryRoute = require("./routes/inventoryRoute");
 const utilities = require("./utilities/"); // is the index.js file in the utilities folder
 const accountRoute = require("./routes/accountRoute");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser")
 
 /* ***********************
  * Middleware
@@ -65,6 +66,9 @@ app.use(bodyParser.json())
 // tells the express application to read and work with data sent via a URL as well as from a form, stored in the request object's 
 // body. The "extended: true" object is a configuration that allows rich objects and arrays to be parsed.
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+
+app.use(cookieParser())
+app.use(utilities.checkJWTToken)
 
 /* ***********************
  * View Engine and Templates

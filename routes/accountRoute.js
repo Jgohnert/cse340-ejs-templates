@@ -8,6 +8,9 @@ router.get("/login", utilities.handleErrors(accountController.buildLogin));
 
 router.get("/register", utilities.handleErrors(accountController.buildRegister));
 
+router.get("/", utilities.checkLogin, utilities.handleErrors(accountController.buildAccountManagement));
+router.get("/account-management", utilities.handleErrors(accountController.buildAccountManagement));
+
 // Process the registration data
 router.post(
   //The path being watched for in the route.
@@ -25,7 +28,9 @@ router.post(
   "/login",
   regValidate.loginRules(),
   regValidate.checkLogRegData,
-  utilities.handleErrors(accountController.buildLogin)
+  // utilities.handleErrors(accountController.buildLogin),
+  // process the login request.
+  utilities.handleErrors(accountController.accountLogin)
 )
 
 module.exports = router;

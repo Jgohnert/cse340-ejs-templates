@@ -206,7 +206,7 @@ nav a:hover {
 }
 
 .manage-links {
-  margin-bottom: 40%;
+  margin-bottom: 10%;
 }
 
 .manage-links a {
@@ -297,6 +297,15 @@ nav a:hover {
   margin: 0 5% 2% 5%;
   padding: 2%;
   color: var(--color5);
+}
+
+#inventoryDisplay tbody td {
+  padding-top: 10px;
+  border-bottom: 1px solid var(--color5);
+}
+
+#inventoryDisplay a {
+  text-decoration: none;
 }
 
 @media (min-width: 40em) {

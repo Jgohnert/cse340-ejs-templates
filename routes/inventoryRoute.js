@@ -15,6 +15,27 @@ router.get("/add-classification", utilities.handleErrors(invController.buildAddC
 
 router.get("/add-inventory", utilities.handleErrors(invController.buildAddInventoryView));
 
+router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON));
+
+// Route to the modify inventory info page
+router.get("/edit/:inventory_id", utilities.handleErrors(invController.modifyInventoryView));
+
+// Route to delete an inventory item
+router.get("/delete/:inventory_id", utilities.handleErrors(invController.deleteConfirmView));
+
+// Route to the update inventory success page
+router.post(
+  "/modify-inventory", 
+  invValidate.inventoryRules(),
+  invValidate.checkUpdateData,
+  utilities.handleErrors(invController.updateInventory)
+);
+
+// "post" route handler that will call a controller function to carry out the delete process.
+router.post(
+  "/delete", 
+  utilities.handleErrors(invController.deleteItem)
+);
 
 // Process the new classification id data
 router.post(

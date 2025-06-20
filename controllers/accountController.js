@@ -2,6 +2,9 @@ const utilities = require("../utilities/");
 const accountModel = require("../models/account-model");
 const bcrypt = require("bcryptjs");
 
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
+
 /* ****************************************
 *  Deliver login view
 * *************************************** */
@@ -25,6 +28,18 @@ async function buildRegister(req, res, next) {
   let nav = await utilities.getNav()
   res.render("account/register", {
     title: "Register",
+    nav,
+    errors: null,
+  })
+}
+
+// /* ****************************************
+// *  Deliver account management view
+// * *************************************** */
+async function buildAccountManagement(req, res, next) {
+  let nav = await utilities.getNav()
+  res.render("account/account-management", {
+    title: "Account Management",
     nav,
     errors: null,
   })
@@ -98,5 +113,70 @@ async function registerAccount(req, res) {
   }
 }
 
+// /* ****************************************
+//  *  Process login request
+//  * ************************************ */
+async function accountLogin(req, res) {
+  // builds the navigation bar for use in views.
+  let nav = await utilities.getNav()
+  // collects the incoming data from the request body.
+  const { account_email, account_password } = req.body
+  // makes a call to a model-based function to locate data associated with an existing email. Returned data, if any.
+  const accountData = await accountModel.getAccountByEmail(account_email)
+  // an "if" to test if nothing was returned.
+  if (!accountData) {
+    // If the variable is empty, a message is set.
+    req.flash("notice", "Please check your credentials and try again.")
+    // the response object is used to return the login view to the browser.
+    res.status(400).render("account/login", {
+      // data to be returned to the view.
+      title: "Login",
+      nav,
+      errors: null,
+      account_email,
+    })
+    return
+  }
+  try {
+    // uses the bcrypt.compare() function which takes the incoming, plain text password 
+    // and the hashed password from the database and compares them to see if they match.
+    if (await bcrypt.compare(account_password, accountData.account_password)) {
+      // If the passwords match, then the JavaScript delete function is used to remove 
+      // the hashed password from the accountData array.
+      delete accountData.account_password
+      // the JWT token is created. The accountData is inserted as the payload. The secret 
+      // is read from the .env file. When the token is ready, it is stored into an "accessToken" variable.
+      // the token will be given a life of 1 hour, measured in seconds. 3600 seconds.
+      const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 * 1000 })
+      // checks to see if the development environment is "development" (meaning local for testing).
+      if(process.env.NODE_ENV === 'development') {
+        // If TRUE, a new cookie is created, named "jwt", the JWT token is stored in the cookie, and the 
+        // options of "httpOnly: true" and "maxAge: 3600 * 1000" are set. This means that the cookie can 
+        // only be passed through the HTTP protocol and cannot be accessed by client-side JavaScript. It will also expire in 1 hour.
+        res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
+        // an "else", (meaning the the environment is not "development"), then the cookie is created with the same name 
+        // and token, but with the added option of "secure: true". This means that the cookie can only be passed through 
+        // HTTPS and not HTTP. This is a security measure to ensure that the cookie is not passed through an unsecured connection.
+      } else {
+        res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 })
+      }
+      // the application then redirects to the default account route. This should deliver an account management view.
+      return res.redirect("/account/")
+    }
+    // an error will occur if the passwords do not match and the token and cookie cannot be created.
+    else {
+      req.flash("message notice", "Please check your credentials and try again.")
+      res.status(400).render("account/login", {
+        title: "Login",
+        nav,
+        errors: null,
+        account_email,
+      })
+    }
+  } catch (error) {
+    throw new Error('Access Forbidden')
+  }
+}
+
 //exports the function for use elsewhere.
-module.exports = { buildLogin, buildRegister, registerAccount }
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement }
