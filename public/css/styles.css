@@ -32,7 +32,7 @@ footer {
 }
 
 h1 {
-  font-size: 25px;
+  font-size: 30px;
   margin: 30px auto;
 }
 
@@ -224,7 +224,7 @@ nav a:hover {
   border: 2px solid var(--color1);
   border-radius: 2%;
   background-color: var(--color3);
-  margin: auto 5%;
+  margin: 20px 5%;
   padding: 15px;
 }
 
@@ -257,6 +257,7 @@ nav a:hover {
 
 .form-button {
   margin-left: 17px;
+  margin-top: 20px;
   width: 150px;
   height: 30px;
   border: 1px solid var(--color5);
@@ -266,6 +267,7 @@ nav a:hover {
   transition: 0.3s;
   background-color: var(--color5);
   color: white;
+  cursor: pointer;
 }
 
 #signup-button {
@@ -280,6 +282,7 @@ nav a:hover {
 #passwordBtn {
   font-size: 15px;
   font-weight: 400;
+  cursor: pointer;
 }
 
 .forms p {

@@ -6,4 +6,15 @@
 
 <%- messages() %>
 
-<h2>You're logged in</h2>
+<h2>Welcome <%= accountData.account_firstname %></h2>
+
+<% if (locals.accountAdmin === "Admin" || locals.accountEmployee === "Employee") { %>
+  <p>You're logged in.</p>
+  <a href="/account/update/<%= accountData.account_id %>">Update Account Information</a>
+  <h3>Inventory Management</h3>
+  <a href="/inv">Access Inventory Management</a>
+<% } else { %>
+  <p>You're logged in.</p>
+  <a href="/account/update/<%= accountData.account_id %>">Update Account Information</a>
+<% } %>
+

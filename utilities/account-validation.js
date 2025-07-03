@@ -25,7 +25,7 @@ validate.registationRules = () => {
         .trim()
         .escape()
         .notEmpty()
-        .isLength({ min: 2 })
+        .isLength({ min: 1 })
         .withMessage("Please provide a last name."), // on error this message is sent.
 
   // valid email is required and cannot already exist in the DB
@@ -87,6 +87,67 @@ validate.loginRules = () => {
     ]
 }
 
+/*  **********************************
+  *  Updated account Validation Rules
+  * ********************************* */
+validate.updateAccountRules = () => {
+    return [
+      body("account_firstname")
+        .trim() 
+        .escape() 
+        .notEmpty()
+        .isLength({ min: 1 })
+        .withMessage("Please provide a first name."), 
+  
+      body("account_lastname")
+        .trim()
+        .escape()
+        .notEmpty()
+        .isLength({ min: 1 })
+        .withMessage("Please provide a last name."),
+
+      body("account_email")
+        .trim()
+        .notEmpty()
+        .isEmail()
+        .withMessage("A valid email is required.")
+        .bail() // This stops the validation here if the email is invalid
+        .normalizeEmail()
+        .custom(async (account_email, {req}) => {
+          // The hidden email in the form. It holds the original email
+          const currentEmail = req.body.current_email
+          // checks if the email exists only if the updated email (account_email) was changed 
+          // from the original email (currentEmail)
+          if (account_email !== currentEmail) {
+            const emailExists = await accountModel.checkExistingEmail(account_email)
+            if (emailExists){
+              throw new Error("Email already exists. Try a different email or use your existing email.")
+            }
+          }
+          return true
+        }),
+    ]
+}
+
+/*  **********************************
+  *  Change password Rules
+  * ********************************* */
+validate.passwordChangeRules = () => {
+    return [
+      body("account_password")
+        .trim()
+        .notEmpty()
+        .isStrongPassword({
+          minLength: 12,
+          minLowercase: 1,
+          minUppercase: 1,
+          minNumbers: 1,
+          minSymbols: 1,
+        })
+        .withMessage("Password does not meet requirements.")
+    ]
+}
+
 /* ******************************
  * Check data and return errors or continue to registration
  * ***************************** */
@@ -133,6 +194,59 @@ validate.checkLogRegData = async (req, res, next) => {
       title: "Login",
       nav,
       account_email,
+    })
+    return
+  }
+  next()
+}
+
+/* ******************************
+ * Check data and return errors or continue to update account form
+ * ***************************** */
+validate.checkUpdatedAccountData = async (req, res, next) => {
+  const { account_firstname, account_lastname, account_email, account_id } = req.body
+  let errors = []
+  errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav()
+    res.render("account/update-account", {
+      title: "Edit Account",
+      nav,
+      errors,
+      account_firstname,
+      account_lastname,
+      account_email,
+      account_id
+    })
+    return
+  }
+  next()
+}
+
+/* ******************************
+ * Check password and return errors or continue to update account form
+ * ***************************** */
+validate.checkUpdatedPasswordData = async (req, res, next) => {
+  const { account_id } = req.body
+  let errors = []
+  errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav()
+
+    // populates the update account form to keep it sticky in case of a change password error.
+    const result = await accountModel.getUserByAccountId(account_id)
+    const user = result[0]
+
+    res.render("account/update-account", {
+      title: "Edit Account",
+      nav,
+      errors,
+      account_firstname: user.account_firstname,
+      account_lastname: user.account_lastname,
+      account_email: user.account_email,
+      account_id: user.account_id
     })
     return
   }

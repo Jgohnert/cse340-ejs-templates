@@ -9,19 +9,39 @@ const utilities = require("../utilities/");
 const invValidate = require('../utilities/inventory-validation');
 
 // route that builds the inventory management view on the management.ejs file.
-router.get("/", utilities.handleErrors(invController.buildManagementView));
+router.get(
+  "/", 
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.buildManagementView)
+);
 
-router.get("/add-classification", utilities.handleErrors(invController.buildAddClassificationView));
+router.get(
+  "/add-classification", 
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.buildAddClassificationView)
+);
 
-router.get("/add-inventory", utilities.handleErrors(invController.buildAddInventoryView));
-
-router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON));
+router.get(
+  "/add-inventory", 
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.buildAddInventoryView)
+);
 
 // Route to the modify inventory info page
-router.get("/edit/:inventory_id", utilities.handleErrors(invController.modifyInventoryView));
+router.get(
+  "/edit/:inventory_id", 
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.modifyInventoryView)
+);
 
 // Route to delete an inventory item
-router.get("/delete/:inventory_id", utilities.handleErrors(invController.deleteConfirmView));
+router.get(
+  "/delete/:inventory_id",
+  utilities.checkAccountType,
+  utilities.handleErrors(invController.deleteConfirmView)
+);
+
+router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON));
 
 // Route to the update inventory success page
 router.post(

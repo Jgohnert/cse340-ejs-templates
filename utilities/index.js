@@ -136,6 +136,9 @@ Util.checkJWTToken = (req, res, next) => {
     res.locals.accountData = accountData
     // adds "loggedin" flag with a value of "1" (meaning true) to the response.locals object to be forwarded on through the rest of this request
     res.locals.loggedin = 1
+
+    res.locals.accountAdmin = accountData.account_type
+    res.locals.accountEmployee = accountData.account_type
     // calls the "next()" function directing the Express server to move to the next step in the application's work flow.
     next()
    })
@@ -149,16 +152,25 @@ Util.checkJWTToken = (req, res, next) => {
  *  Check Login
  * ************************************ */
 // creates the function and assigns it to the "Util" object with a name of "checkLogin".
- Util.checkLogin = (req, res, next) => {
-  // check to see if the login flag exists and is "true" in the response object.
-  if (res.locals.loggedin) {
-    // allows the process of the application to continue by using the "next()" function.
-    next()
-  } else {
-    req.flash("notice", "Please log in.")
-    // redirects to the login route, because the login flag does not exist.
-    return res.redirect("/account/login")
-  }
+Util.checkLogin = (req, res, next) => {
+ // check to see if the login flag exists and is "true" in the response object.
+ if (res.locals.loggedin) {
+   // allows the process of the application to continue by using the "next()" function.
+   next()
+ } else {
+   req.flash("notice", "Please log in.")
+   // redirects to the login route, because the login flag does not exist.
+   return res.redirect("/account/login")
  }
+}
+
+Util.checkAccountType = (req, res, next) => {
+ if (res.locals.accountAdmin === 'Admin' || res.locals.accountAdmin === 'Employee') {
+   next()
+ } else {
+   req.flash("notice", "Please login. You must be an admin or employee to access this page.")
+   return res.redirect("/account/login")
+ }
+}
 
 module.exports = Util

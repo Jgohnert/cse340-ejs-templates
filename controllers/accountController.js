@@ -2,8 +2,8 @@ const utilities = require("../utilities/");
 const accountModel = require("../models/account-model");
 const bcrypt = require("bcryptjs");
 
-const jwt = require("jsonwebtoken")
-require("dotenv").config()
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 /* ****************************************
 *  Deliver login view
@@ -41,7 +41,7 @@ async function buildAccountManagement(req, res, next) {
   res.render("account/account-management", {
     title: "Account Management",
     nav,
-    errors: null,
+    errors: null
   })
 }
 
@@ -178,5 +178,125 @@ async function accountLogin(req, res) {
   }
 }
 
+function logoutUser(req, res) {
+  res.clearCookie('jwt')
+  req.flash('notice', 'You have been logged out successfully.')
+  res.redirect('/')
+}
+
+async function modifyAccountView(req, res, next) {
+  const account_id = parseInt(req.params.account_id)
+  const jwtId = res.locals.accountData.account_id
+
+  if (account_id !== jwtId) {
+    req.flash("notice", "You are unauthorized to access this page.")
+    return res.redirect("/account")
+  }
+  else {
+    let nav = await utilities.getNav()
+    const result = await accountModel.getUserByAccountId(account_id)
+    const userData = result[0]
+  
+    res.render("account/update-account", {
+      title: "Edit Account",
+      nav,
+      errors: null,
+      account_firstname: userData.account_firstname,
+      account_lastname: userData.account_lastname,
+      account_email: userData.account_email,
+      account_id: userData.account_id,
+    })
+  }
+}
+
+/* ****************************************
+*  Update Inventory Data
+* *************************************** */
+async function updateAccount(req, res, next) {
+  let nav = await utilities.getNav()
+  const {
+    account_firstname,
+    account_lastname,
+    account_email,
+    account_id
+  } = req.body
+  const updateResult = await accountModel.updateAccountData(
+    account_firstname,
+    account_lastname,
+    account_email,
+    account_id
+  )
+
+  if (updateResult) {
+    // This sets a new JWT cookie so that the username displayed in the header changes 
+    // if the user updated the their username.
+    const accessToken = jwt.sign(updateResult, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 * 1000 })
+    
+    if (process.env.NODE_ENV === 'development') {
+      res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
+    } else {
+      res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 })
+    }
+    req.flash("notice", `Your account information has been changed.`)
+    res.redirect("/account")
+  } else {
+    req.flash("notice", "Sorry, Updating your account information has failed.")
+    res.status(501).render("account/update-account", {
+    title: "Edit Account",
+    nav,
+    errors: null,
+    account_firstname,
+    account_lastname,
+    account_email,
+    account_id,
+    })
+  }
+}
+
+async function updatePassword(req, res, next) {
+  let nav = await utilities.getNav()
+  const { account_password, account_id } = req.body
+  // gets the account data to keep the update account form sticky
+  const result = await accountModel.getUserByAccountId(account_id)
+  const userData = result[0]
+
+  try {
+    const hashedPassword = await bcrypt.hash(account_password, 10)
+    const updateResult = await accountModel.updateAccountPassword(
+      hashedPassword,
+      account_id
+    )
+
+    if (updateResult) {
+      req.flash("notice", `Your password has been changed.`)
+      res.redirect("/account")
+    } else { 
+      req.flash("notice", "Sorry, Updating your password has failed.")
+      res.status(501).render("account/update-account", {
+        title: "Edit Account",
+        nav,
+        errors: null,
+        account_firstname: userData.account_firstname,
+        account_lastname: userData.account_lastname,
+        account_email: userData.account_email,
+        account_id: userData.account_id
+      })
+    }
+  } catch (error) {
+      req.flash("notice", "An error occurred.")
+      res.status(500).redirect("/account")
+  }
+}
+
 //exports the function for use elsewhere.
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement }
+module.exports = { 
+  buildLogin, 
+  buildRegister, 
+  registerAccount, 
+  accountLogin, 
+  buildAccountManagement,
+  logoutUser,
+  modifyAccountView,
+  updateAccount,
+  updatePassword
+}
