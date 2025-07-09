@@ -7,4 +7,33 @@
   res.redirect('/')
 } %>
 
+<%- messages() %>
+
 <%- vehicleGrid %>
+
+<h2>Customer Reviews</h2>
+
+<%- userReviews %>
+
+<% if (locals.loggedin) { %>
+  <h2>Add a Review</h2>
+  <form class="forms" action="/inv/add-review" method="post">
+    <fieldset>
+      <div class="form-inputs">
+        <label>Your Name
+          <input type="text" id="firstname" name="account_firstname" required value="<%= accountData.account_firstname %>" readonly>
+        </label>
+        <label>Review:
+          <textarea id="description" name="review_text" required></textarea>
+        </label>
+      </div>
+    </fieldset>
+    <input class="form-button" type="submit" value="Submit Review">
+    <input type="hidden" name="account_id" value="<%= locals.account_id %>">
+    <input type="hidden" name="inv_id" value="<%= locals.inv_id %>">
+  </form>
+<% } else { %>
+  <p>You must be logged in to write a review.</p>
+  <a title="Click to login" href="/account/login">Login</a>
+<% } %>
+

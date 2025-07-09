@@ -40,14 +40,21 @@ invCont.buildByClassificationId = async function (req, res, next) {
  * ***************************/
 invCont.buildByVehicleId = async function (req, res, next) {
   const vehicle_id = req.params.vehicleId;
+  const account_id = res.locals.accountData?.account_id;
   const data = await invModel.getVehicleByInvId(vehicle_id);
   const vehicleGrid = await utilities.buildvehicleGrid(data);
+  const reviewData = await invModel.getReviewsByInvId(vehicle_id);
+  const userReviews = await utilities.buildReviewLayout(reviewData);
   let nav = await utilities.getNav();
   const vehicleName = `${data[0].inv_make} ${data[0].inv_model}`;
+
   res.render("./inventory/vehicle-details", {
     title: vehicleName,
     nav,
     vehicleGrid,
+    userReviews,
+    inv_id: vehicle_id,
+    account_id: account_id
   });
 }
 
@@ -333,6 +340,48 @@ invCont.deleteItem = async function (req, res, next) {
     req.flash("notice", "Sorry, the deletion failed.")
     res.status(501).redirect("inv/delete/inv_id", {
     })
+  }
+}
+
+invCont.newReviewInfo = async function(req, res) {
+  let nav = await utilities.getNav()
+  const { review_text, inv_id, account_id } = req.body
+
+  const reviewResult = await invModel.addNewReview(
+    review_text, inv_id, account_id
+  );
+
+  const vehicle_id = inv_id;
+  const data = await invModel.getVehicleByInvId(vehicle_id);
+  const vehicleGrid = await utilities.buildvehicleGrid(data);
+  const reviewData = await invModel.getReviewsByInvId(vehicle_id)
+  const userReviews = await utilities.buildReviewLayout(reviewData)
+  const vehicleName = `${data[0].inv_make} ${data[0].inv_model}`;
+
+  if (reviewResult) {
+    req.flash("notice", "Your review has been saved.");
+
+    res.status(201).render("./inventory/vehicle-details", {
+      title: vehicleName,
+      nav,
+      vehicleGrid,
+      userReviews,
+      review_text,
+      inv_id, 
+      account_id
+    });
+  } else {
+    req.flash("notice", "Sorry, adding your review has failed.")
+
+    res.status(501).render("inventory/add-inventory", {
+      title: vehicleName,
+      nav,
+      vehicleGrid,
+      userReviews,
+      review_text,
+      inv_id, 
+      account_id
+    });
   }
 }
 

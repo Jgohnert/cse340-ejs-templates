@@ -54,6 +54,27 @@ async function getVehicleByInvId(vehicle_id) {
   }
 }
 
+/* ***************************
+ *  a function to retrieve the reviews in the review 
+ *  table, based on the inventory id (vehicle_id)
+ * ************************** */
+async function getReviewsByInvId(vehicle_id) {
+  try {
+    const data = await pool.query(
+      `SELECT r.review_text, r.review_date, a.account_firstname
+      FROM review r
+      JOIN account a ON r.account_id = a.account_id
+      WHERE r.inv_id = $1 
+      ORDER BY r.review_date DESC;`,
+      [vehicle_id]
+    )
+    return data.rows
+  } catch (error) {
+    console.error("getReviewsByInvId error " + error);
+    return []
+  }
+}
+
 /* *****************************
 *   Add new classification id
 * *************************** */
@@ -160,14 +181,25 @@ async function deleteInventoryItem(inv_id) {
   }
 }
 
+async function addNewReview( review_text, inv_id, account_id ){
+  try {
+    const sql = `INSERT INTO review (review_text, inv_id, account_id) VALUES ($1, $2, $3) RETURNING *`
+    return await pool.query(sql, [review_text, inv_id, account_id])
+  } catch (error) {
+    return error.message
+  }
+}
+
 // exports the function for use elsewhere.
 module.exports = {
   getClassifications, 
   getInventoryByClassificationId, 
-  getVehicleByInvId, 
+  getVehicleByInvId,
+  getReviewsByInvId,
   addNewClassification, 
   checkExistingClassification,
   addNewVehicle,
   updateInventoryItem,
-  deleteInventoryItem
+  deleteInventoryItem,
+  addNewReview
 }

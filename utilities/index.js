@@ -101,6 +101,33 @@ Util.buildvehicleGrid = async function(data){
   return grid;
 }
 
+const { format } = require("date-fns");
+
+//takes all the reviews for a specific vehicle and wraps it up in HTML to deliver to the view,
+Util.buildReviewLayout = async function(reviewData){
+  let layout = "";
+
+  if (reviewData.length > 0) {
+    layout += `<ul id="review-display">`;
+        
+    for (const review of reviewData) {
+      const abbreviatedDate = format(new Date(review.review_date), "MMM dd yyyy");
+      layout += `
+        <li class="user-review">
+          <p class="user-name"><b>${review.account_firstname}</b></p>
+          <p class="review-date">${abbreviatedDate}</p>
+          <p>${review.review_text}</p>
+          <hr>
+        </li>`;
+    }
+        
+    layout += `</ul>`;
+  } else {
+    layout += '<p>There are no reviews</p>';
+  }
+  return layout;
+}
+
 /* ****************************************
  * Middleware For Handling Errors
  * Wrap other function in this for 

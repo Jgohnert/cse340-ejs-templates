@@ -189,6 +189,7 @@ nav a:hover {
 
 #vehicle-display {
   padding: 0%;
+  margin-bottom: 80px;
 }
 
 #vehicle-display img {
@@ -309,6 +310,29 @@ nav a:hover {
 
 #inventoryDisplay a {
   text-decoration: none;
+}
+
+#review-display {
+  padding: 0%;
+  margin: 30px 20px 50px 20px;
+}
+
+.user-review {
+  list-style: none;
+  padding: 0%;
+}
+
+.user-name {
+  margin-bottom: 0%;
+  font-size: 18px;
+}
+
+#review-display p {
+  margin-top: 0%;
+}
+
+.review-date {
+  font-size: 12px;
 }
 
 @media (min-width: 40em) {

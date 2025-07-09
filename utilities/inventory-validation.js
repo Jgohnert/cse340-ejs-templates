@@ -86,6 +86,15 @@ validate.inventoryRules = () => {
     ]
 }
 
+validate.addReviewRules = () => {
+  return [
+      body("review_text")
+        .trim()
+        .notEmpty()
+        .withMessage("Please write a review before submitting."),
+    ]
+}
+
 /* ******************************
  * Check data and return errors or continue to add-classification view
  * ***************************** */
@@ -197,6 +206,40 @@ validate.checkUpdateData = async (req, res, next) => {
       inv_year,
       inv_miles,
       inv_color
+    })
+    return
+  }
+  next()
+}
+
+/* ******************************
+ * Check the user review and return errors or continue to vehicle-details view
+ * It makes the user's review sticky in case of an error.
+ * ***************************** */
+validate.checkReviewData = async (req, res, next) => {
+  
+  const { review_text, inv_id, account_id } = req.body
+  let errors = []
+  
+  errors = validationResult(req)
+
+  const vehicle_id = req.body.inv_id;
+  const data = await inventoryModel.getVehicleByInvId(vehicle_id);
+  const vehicleGrid = await utilities.buildvehicleGrid(data);
+  const reviewData = await inventoryModel.getReviewsByInvId(vehicle_id)
+  const userReviews = await utilities.buildReviewLayout(reviewData)
+  
+  if (!errors.isEmpty()) {
+    let nav = await utilities.getNav();
+    const vehicleName = `${data[0].inv_make} ${data[0].inv_model}`;
+    res.render("./inventory/vehicle-details", {
+      title: vehicleName,
+      nav,
+      vehicleGrid,
+      userReviews,
+      review_text,
+      inv_id,
+      account_id
     })
     return
   }

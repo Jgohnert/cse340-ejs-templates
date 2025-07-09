@@ -84,6 +84,12 @@ router.get("/type/:classificationId", utilities.handleErrors(invController.build
 // Route to build vehicle details by classification view
 router.get("/detail/:vehicleId", utilities.handleErrors(invController.buildByVehicleId));
 
-
+// processes the submitted user reviiew.
+router.post(
+  "/add-review",
+  invValidate.addReviewRules(),
+  invValidate.checkReviewData,
+  utilities.handleErrors(invController.newReviewInfo)
+)
 
 module.exports = router;
