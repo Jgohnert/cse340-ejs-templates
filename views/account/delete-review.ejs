@@ -1,0 +1,31 @@
+<% if (title) { %>
+<h1><%= title %></h1>
+<% } else {
+  res.redirect('/')
+} %>
+
+<%- messages() %>
+
+<% if (errors) { %>
+  <ul class="notice">
+ <% errors.array().forEach(error => { %>
+   <li><%= error.msg %></li>
+<%  }) %>
+ </ul>
+<% } %>
+
+<p>Confirm Deletion - The delete is permanent.</p>
+<form class="forms" action="/account/delete" method="post">
+  <fieldset>
+    <div class="form-inputs">
+      <label>Your Name
+        <input type="text" id="firstname" name="account_firstname" required value="<%= account_firstname %>" readonly>
+      </label>
+      <label>Review:
+        <textarea id="description" name="review_text" required readonly><%= review_text %></textarea>
+      </label>
+    </div>
+  </fieldset>
+  <input type="hidden" name="review_id" value="<%= review_id %>">
+  <input class="form-button" type="submit" value="Delete Review">
+</form>

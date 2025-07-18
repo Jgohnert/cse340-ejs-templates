@@ -1,10 +1,10 @@
 // requires the inventory-model file, so it can be used to get data from the database.
-const invModel = require("../models/inventory-model")
+const invModel = require("../models/inventory-model");
 // creates an empty Util object.
 const Util = {}
 
-const jwt = require("jsonwebtoken")
-require("dotenv").config()
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 /* ************************
  * Constructs the nav HTML unordered list
@@ -18,7 +18,7 @@ Util.getNav = async function(req, res, next) {
   console.log(data);
   let list = "<ul>";
   // a new list item, containing a link to the index route, is added to the unordered list.
-  list += '<li><a href="/" title="Home page">Home</a></li>'
+  list += '<li><a href="/" title="Home page">Home</a></li>';
   // uses a forEach loop to move through the rows of the data array one at a time.
   data.rows.forEach((row) => {
     list += "<li>";
@@ -50,26 +50,26 @@ Util.buildClassificationGrid = async function(data){
     grid = '<ul id="inv-display">'
     // sets up a "forEach" loop, to break each element of the data array into a vehicle object.
     data.forEach(vehicle => { 
-      grid += '<li>'
+      grid += '<li>';
       grid +=  '<a href="../../inv/detail/'+ vehicle.inv_id 
       + '" title="View ' + vehicle.inv_make + ' '+ vehicle.inv_model 
       + 'details" class="thumb-img"><img src="' + vehicle.inv_thumbnail 
       +'" alt="Image of '+ vehicle.inv_make + ' ' + vehicle.inv_model 
-      +' on CSE Motors" /></a>'
-      grid += '<div class="namePrice">'
-      grid += '<h2>'
-      grid += '<a href="../../inv/detail/' + vehicle.inv_id +'" title="View ' 
+      +' on CSE Motors" /></a>';
+      grid += '<div class="namePrice">';
+      grid += '<h2>';
+      grid += '<a href="../../inv/detail/' + vehicle.inv_id +'" title="View ' ;
       + vehicle.inv_make + ' ' + vehicle.inv_model + ' details">' 
       + vehicle.inv_make + ' ' + vehicle.inv_model + '</a>'
-      grid += '</h2>'
-      grid += '<span>$' 
-      + new Intl.NumberFormat('en-US').format(vehicle.inv_price) + '</span>'
-      grid += '</div>'
-      grid += '</li>'
+      grid += '</h2>';
+      grid += '<span>$';
+      + new Intl.NumberFormat('en-US').format(vehicle.inv_price) + '</span>';
+      grid += '</div>';
+      grid += '</li>';
     })
-    grid += '</ul>'
+    grid += '</ul>';
   } else { 
-    grid += '<p class="notice">Sorry, no matching vehicles could be found.</p>'
+    grid += '<p class="notice">Sorry, no matching vehicles could be found.</p>';
   }
   return grid
 }
@@ -153,19 +153,19 @@ Util.checkJWTToken = (req, res, next) => {
     // an "if" to see if an error exists.
     if (err) {
      // if an error, meaning the token is not valid, a flash message is created.
-     req.flash("Please log in")
+     req.flash("Please log in");
      //  the cookie is deleted.
-     res.clearCookie("jwt")
+     res.clearCookie("jwt");
      //  redirects to the "login" route, so the client can "login".
      return res.redirect("/account/login")
     }
     // adds the accountData object to the response.locals object to be forwarded on through the rest of this request
-    res.locals.accountData = accountData
+    res.locals.accountData = accountData;
     // adds "loggedin" flag with a value of "1" (meaning true) to the response.locals object to be forwarded on through the rest of this request
-    res.locals.loggedin = 1
+    res.locals.loggedin = 1;
 
-    res.locals.accountAdmin = accountData.account_type
-    res.locals.accountEmployee = accountData.account_type
+    res.locals.accountAdmin = accountData.account_type;
+    res.locals.accountEmployee = accountData.account_type;
     // calls the "next()" function directing the Express server to move to the next step in the application's work flow.
     next()
    })
@@ -185,9 +185,9 @@ Util.checkLogin = (req, res, next) => {
    // allows the process of the application to continue by using the "next()" function.
    next()
  } else {
-   req.flash("notice", "Please log in.")
+   req.flash("notice", "Please log in.");
    // redirects to the login route, because the login flag does not exist.
-   return res.redirect("/account/login")
+   return res.redirect("/account/login");
  }
 }
 
@@ -195,7 +195,7 @@ Util.checkAccountType = (req, res, next) => {
  if (res.locals.accountAdmin === 'Admin' || res.locals.accountAdmin === 'Employee') {
    next()
  } else {
-   req.flash("notice", "Please login. You must be an admin or employee to access this page.")
+   req.flash("notice", "Please login. You must be an admin or employee to access this page.");
    return res.redirect("/account/login")
  }
 }

@@ -10,10 +10,16 @@ async function registerAccount(account_firstname, account_lastname, account_emai
     // used - $# - as part of the "parameterized statement" syntax. Additionally, 'Client' is included in the SQL 
     // statement to indicate the "type" of account being registered. The "RETURNING *" clause indicates to the 
     // PostgrSQL server to return values based on the record that was inserted.
-    const sql = "INSERT INTO account (account_firstname, account_lastname, account_email, account_password, account_type) VALUES ($1, $2, $3, $4, 'Client') RETURNING *"
+    const sql = `INSERT INTO account (
+                account_firstname, 
+                account_lastname, 
+                account_email, 
+                account_password, 
+                account_type) 
+                VALUES ($1, $2, $3, $4, 'Client') RETURNING *`;
     // Note the use of "await" to wait until the promise has been replaced with data, from the query executing the 
     // SQL statement and replacing the placeholders with the actual data in the variables.
-    return await pool.query(sql, [account_firstname, account_lastname, account_email, account_password])
+    return await pool.query(sql, [account_firstname, account_lastname, account_email, account_password]);
   } catch (error) {
     return error.message
   }
@@ -24,8 +30,8 @@ async function registerAccount(account_firstname, account_lastname, account_emai
  * ********************* */
 async function checkExistingEmail(account_email){
   try {
-    const sql = "SELECT * FROM account WHERE account_email = $1"
-    const email = await pool.query(sql, [account_email])
+    const sql = "SELECT * FROM account WHERE account_email = $1";
+    const email = await pool.query(sql, [account_email]);
     return email.rowCount
   } catch (error) {
     return error.message
@@ -40,9 +46,10 @@ async function getAccountByEmail (account_email) {
     // creates a variable to store the results of the query.
     const result = await pool.query(
       // a SQL SELECT query using the parameterized statement syntax. This is the first argument in the pool.query function.
-      'SELECT account_id, account_firstname, account_lastname, account_email, account_type, account_password FROM account WHERE account_email = $1',
+      `SELECT account_id, account_firstname, account_lastname, account_email, account_type, account_password 
+      FROM account WHERE account_email = $1`,
       // passes in the client_email, as an array element to replace the placeholder at the end of the SQL statement. This is the second argument in the pool.query function.
-      [account_email])
+      [account_email]);
     // sends the first record, from the result set returned by the query, back to where this function was called.
     return result.rows[0]
   } catch (error) {
@@ -64,6 +71,43 @@ async function getUserByAccountId(account_id) {
   }
 }
 
+async function getReviewsByAccountId(account_id) {
+  try {
+    const data = await pool.query(
+      `SELECT r.review_id, r.review_date, r.review_text, i.inv_make, i.inv_model, i.inv_year
+       FROM review r
+       JOIN inventory i ON r.inv_id = i.inv_id
+       WHERE r.account_id = $1
+       ORDER BY r.review_date DESC;`,
+      [account_id]
+    );
+    return data.rows;
+  } catch (error) {
+    console.error("getReviewsByAccountId error " + error);
+    return [];
+  }
+}
+
+
+async function getReviewByReviewId(review_id) {
+  try {
+    const data = await pool.query(
+      `SELECT r.review_id, r.review_date, r.review_text, 
+              i.inv_make, i.inv_model,
+              a.account_firstname
+       FROM review r
+       JOIN inventory i ON r.inv_id = i.inv_id
+       JOIN account a ON r.account_id = a.account_id
+       WHERE r.review_id = $1`,
+      [review_id]
+    )
+    return data.rows;
+  } catch (error) {
+    console.error("getReviewByReviewId error " + error);
+    return [];
+  }
+}
+
 /* ***************************
  *  Update account Data
  * ************************** */
@@ -79,13 +123,13 @@ async function updateAccountData(
       account_firstname = $1, 
       account_lastname = $2, 
       account_email = $3 
-      WHERE account_id = $4 RETURNING *`
+      WHERE account_id = $4 RETURNING *`;
     const data = await pool.query(sql, [
       account_firstname,
       account_lastname,
       account_email,
       account_id
-    ])
+    ]);
     return data.rows[0]
   } catch (error) {
     console.error("model error: " + error)
@@ -100,14 +144,46 @@ async function updateAccountPassword(
     const sql =
       `UPDATE public.account SET 
       account_password = $1
-      WHERE account_id = $2 RETURNING *`
+      WHERE account_id = $2 RETURNING *`;
     const data = await pool.query(sql, [
       account_password,
       account_id
-    ])
+    ]);
     return data.rows[0]
   } catch (error) {
     console.error("model error: " + error)
+  }
+}
+
+async function updateReviewData(
+  review_text,
+  review_id
+) {
+  try {
+    const sql =
+      `UPDATE public.review SET 
+      review_text = $1
+      WHERE review_id = $2 RETURNING *`;
+    const data = await pool.query(sql, [
+      review_text,
+      review_id
+    ]);
+    return data.rows[0]
+  } catch (error) {
+    console.error("model error: " + error)
+  }
+}
+
+/* ***************************
+ *  Delete review data
+ * ************************** */
+async function deleteReviewData(review_id) {
+  try {
+    const sql = "DELETE FROM review WHERE review_id = $1";
+    const data = await pool.query(sql, [review_id]);
+    return data
+  } catch (error) {
+    console.error("model error: " + error);
   }
 }
 
@@ -117,5 +193,9 @@ module.exports = {
   getAccountByEmail,
   getUserByAccountId,
   updateAccountData,
-  updateAccountPassword
+  updateAccountPassword,
+  getReviewsByAccountId,
+  getReviewByReviewId,
+  updateReviewData,
+  deleteReviewData
 }

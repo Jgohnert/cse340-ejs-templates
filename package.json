@@ -25,6 +25,7 @@
     "express-validator": "^6.15.0",
     "is-promise": "^4.0.0",
     "jsonwebtoken": "^9.0.2",
+    "node": "^20.19.4",
     "once": "^1.4.0",
     "pg": "^8.8.0",
     "router": "^2.2.0",

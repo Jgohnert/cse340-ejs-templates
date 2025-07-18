@@ -63,7 +63,7 @@ router.post(
   invValidate.classificationRules(),
   invValidate.checkClassData,
   utilities.handleErrors(invController.newClassificationId)
-)
+);
 
 // Process the new classification id data
 router.post(
@@ -71,7 +71,7 @@ router.post(
   invValidate.inventoryRules(),
   invValidate.checkInvData,
   utilities.handleErrors(invController.newVehicleInfo)
-)
+);
 
 // Route to build inventory by classification view
 // the route, which is divided into three elements:
@@ -90,6 +90,6 @@ router.post(
   invValidate.addReviewRules(),
   invValidate.checkReviewData,
   utilities.handleErrors(invController.newReviewInfo)
-)
+);
 
 module.exports = router;

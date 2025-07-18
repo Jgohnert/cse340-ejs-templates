@@ -100,13 +100,13 @@ validate.addReviewRules = () => {
  * ***************************** */
 validate.checkClassData = async (req, res, next) => {
   
-  const { classification_name } = req.body
-  let errors = []
+  const { classification_name } = req.body;
+  let errors = [];
   
-  errors = validationResult(req)
+  errors = validationResult(req);
   
   if (!errors.isEmpty()) {
-    let nav = await utilities.getNav()
+    let nav = await utilities.getNav();
     
     res.render("inventory/add-classification", {
       errors,
@@ -134,13 +134,13 @@ validate.checkInvData = async (req, res, next) => {
       inv_price,
       inv_year,
       inv_miles,
-      inv_color } = req.body
-  let errors = []
+      inv_color } = req.body;
+  let errors = [];
   
-  errors = validationResult(req)
+  errors = validationResult(req);
   
   if (!errors.isEmpty()) {
-    let nav = await utilities.getNav()
+    let nav = await utilities.getNav();
     const classificationList = await require("../controllers/invController").buildClassificationList(req.body.classification_id);
     res.render("inventory/add-inventory", {
       errors,
@@ -178,17 +178,17 @@ validate.checkUpdateData = async (req, res, next) => {
       inv_price,
       inv_year,
       inv_miles,
-      inv_color } = req.body
-  let errors = []
+      inv_color } = req.body;
+  let errors = [];
   
-  errors = validationResult(req)
+  errors = validationResult(req);
   
   if (!errors.isEmpty()) {
-    const inventory_id = parseInt(inv_id)
-    let nav = await utilities.getNav()
-    const result = await inventoryModel.getVehicleByInvId(inventory_id)
-    const itemData = result[0]
-    const itemName = `${itemData.inv_make} ${itemData.inv_model}`
+    const inventory_id = parseInt(inv_id);
+    let nav = await utilities.getNav();
+    const result = await inventoryModel.getVehicleByInvId(inventory_id);
+    const itemData = result[0];
+    const itemName = `${itemData.inv_make} ${itemData.inv_model}`;
     const classificationList = await require("../controllers/invController").buildClassificationList(req.body.classification_id);
     res.render("inventory/modify-inventory", {
       errors,
@@ -218,16 +218,16 @@ validate.checkUpdateData = async (req, res, next) => {
  * ***************************** */
 validate.checkReviewData = async (req, res, next) => {
   
-  const { review_text, inv_id, account_id } = req.body
-  let errors = []
+  const { review_text, inv_id, account_id } = req.body;
+  let errors = [];
   
-  errors = validationResult(req)
+  errors = validationResult(req);
 
   const vehicle_id = req.body.inv_id;
   const data = await inventoryModel.getVehicleByInvId(vehicle_id);
   const vehicleGrid = await utilities.buildvehicleGrid(data);
-  const reviewData = await inventoryModel.getReviewsByInvId(vehicle_id)
-  const userReviews = await utilities.buildReviewLayout(reviewData)
+  const reviewData = await inventoryModel.getReviewsByInvId(vehicle_id);
+  const userReviews = await utilities.buildReviewLayout(reviewData);
   
   if (!errors.isEmpty()) {
     let nav = await utilities.getNav();

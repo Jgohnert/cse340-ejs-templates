@@ -1,7 +1,7 @@
 const accountModel = require("../models/account-model");
 
-const utilities = require(".")
-const { body, validationResult } = require("express-validator")
+const utilities = require(".");
+const { body, validationResult } = require("express-validator");
 const validate = {}
 
 /*  **********************************
@@ -148,6 +148,20 @@ validate.passwordChangeRules = () => {
     ]
 }
 
+/*  **********************************
+  *  Updated review rules
+  * ********************************* */
+validate.reviewRules = () => {
+    return [
+      body("review_text")
+        .trim() 
+        .escape()
+        .notEmpty()
+        .isLength({ min: 1 })
+        .withMessage("Please provide a review.")
+    ]
+}
+
 /* ******************************
  * Check data and return errors or continue to registration
  * ***************************** */
@@ -156,14 +170,14 @@ validate.checkRegData = async (req, res, next) => {
 // values from the request body. Notice that the password is not stored. These variables will be used to 
 // re-populate the form if errors are found. Best practice is to make the client redo the password. So, 
 // the password value will NOT be returned.
-  const { account_firstname, account_lastname, account_email } = req.body
-  let errors = []
+  const { account_firstname, account_lastname, account_email } = req.body;
+  let errors = [];
   // calls the express-validator "validationResult" function and sends the request object 
   // (containing all the incoming data) as a parameter. All errors, if any, will be stored into the errors array.
-  errors = validationResult(req)
+  errors = validationResult(req);
   // checks the errors array to see if any errors exist. Notice the "!" which inverts the test, meaning errors IS NOT empty.
   if (!errors.isEmpty()) {
-    let nav = await utilities.getNav()
+    let nav = await utilities.getNav();
     //calls the render function to rebuild the registration view.
     res.render("account/register", {
       //sends these items back to the view.
@@ -184,11 +198,11 @@ validate.checkRegData = async (req, res, next) => {
  * Check data and return errors or continue to login
  * ***************************** */
 validate.checkLogRegData = async (req, res, next) => {
-  const { account_email } = req.body
-  let errors = []
-  errors = validationResult(req)
+  const { account_email } = req.body;
+  let errors = [];
+  errors = validationResult(req);
   if (!errors.isEmpty()) {
-    let nav = await utilities.getNav()
+    let nav = await utilities.getNav();
     res.render("account/login", {
       errors,
       title: "Login",
@@ -204,12 +218,12 @@ validate.checkLogRegData = async (req, res, next) => {
  * Check data and return errors or continue to update account form
  * ***************************** */
 validate.checkUpdatedAccountData = async (req, res, next) => {
-  const { account_firstname, account_lastname, account_email, account_id } = req.body
-  let errors = []
-  errors = validationResult(req)
+  const { account_firstname, account_lastname, account_email, account_id } = req.body;
+  let errors = [];
+  errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    let nav = await utilities.getNav()
+    let nav = await utilities.getNav();
     res.render("account/update-account", {
       title: "Edit Account",
       nav,
@@ -228,16 +242,16 @@ validate.checkUpdatedAccountData = async (req, res, next) => {
  * Check password and return errors or continue to update account form
  * ***************************** */
 validate.checkUpdatedPasswordData = async (req, res, next) => {
-  const { account_id } = req.body
-  let errors = []
-  errors = validationResult(req)
+  const { account_id } = req.body;
+  let errors = [];
+  errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    let nav = await utilities.getNav()
+    let nav = await utilities.getNav();
 
     // populates the update account form to keep it sticky in case of a change password error.
-    const result = await accountModel.getUserByAccountId(account_id)
-    const user = result[0]
+    const result = await accountModel.getUserByAccountId(account_id);
+    const user = result[0];
 
     res.render("account/update-account", {
       title: "Edit Account",
@@ -248,6 +262,31 @@ validate.checkUpdatedPasswordData = async (req, res, next) => {
       account_email: user.account_email,
       account_id: user.account_id
     })
+    return
+  }
+  next()
+}
+
+/* ******************************
+ * Check data and return errors or continue to update review form
+ * ***************************** */
+validate.checkUpdatedReviewData = async (req, res, next) => {
+  let errors = [];
+  errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const review_id = parseInt(req.body.review_id);
+    let nav = await utilities.getNav();
+    const result = await accountModel.getReviewByReviewId(review_id);
+    const itemData = result[0];
+    const itemName = `${itemData.inv_make} ${itemData.inv_model}`;
+    res.render("account/edit-review", {
+      title: "Edit Review For " + itemName,
+      nav,
+      errors,
+      review_id: itemData.review_id,
+      review_text: itemData.review_text,
+    });
     return
   }
   next()

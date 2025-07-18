@@ -6,20 +6,20 @@
 // Finds the classification select element in the inventory management 
 // view, based on its ID, and stores its reference into a local 
 // JavaScript variable.
-let classificationList = document.querySelector("#classificationList")
+let classificationList = document.querySelector("#classificationList");
 // Attaches the eventListener to the variable representing the 
 // classification select element and listens for any "change". When a 
 // change occurs an anonymous function is executed.
 classificationList.addEventListener("change", function () { 
   //  Captures the new value from the classification select element and 
   // stores it into a JavaScript variable.
-  let classification_id = classificationList.value 
+  let classification_id = classificationList.value;
   // Writes the value as part of a string to the console log for testing purposes.
-  console.log(`classification_id is: ${classification_id}`) 
+  console.log(`classification_id is: ${classification_id}`);
   // The URL that will be used to request inventory data from the inventory controller.
-  let classIdURL = "/inv/getInventory/"+classification_id 
+  let classIdURL = "/inv/getInventory/"+classification_id;
   // The JavaScript "Fetch" which is a modern method of initiating an AJAX request.
-  fetch(classIdURL) 
+  fetch(classIdURL)
   // A "then" method that waits for data to be returned from the fetch. The 
   // response object is passed into an anonymous function for processing.
   .then(function (response) { 
@@ -30,8 +30,8 @@ classificationList.addEventListener("change", function () {
       return response.json(); 
    } 
   // The error that occurs if the "if" test fails. 
-   throw Error("Network response was not OK"); 
-  }) 
+   throw Error("Network response was not OK");
+  })
   //   Accepts the JavaScript object from line 12, and passes it as a parameter into an anonymous function.
   .then(function (data) { 
     // Sends the JavaScript object to the console log for testing purposes.
@@ -43,7 +43,7 @@ classificationList.addEventListener("change", function () {
   // A "catch" which captures any errors and sends them into an anonymous function.
   .catch(function (error) { 
     // Writes the caught error to the console log for us to see for troubleshooting.
-    console.log('There was a problem: ', error.message) 
+    console.log('There was a problem: ', error.message);
   }) 
 })
 

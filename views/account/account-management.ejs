@@ -13,8 +13,14 @@
   <a href="/account/update/<%= accountData.account_id %>">Update Account Information</a>
   <h3>Inventory Management</h3>
   <a href="/inv">Access Inventory Management</a>
+  <h3>My Reviews</h3>
+  <table id="reviewDisplay"></table>
 <% } else { %>
   <p>You're logged in.</p>
   <a href="/account/update/<%= accountData.account_id %>">Update Account Information</a>
+  <h3>My Reviews</h3>
+  <table id="reviewDisplay"></table>
 <% } %>
 
+<noscript>JavaScript must be enabled to use this page.</noscript>
+<script src="../../js/accountReviews.js"></script>

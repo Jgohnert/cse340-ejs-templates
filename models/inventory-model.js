@@ -9,7 +9,7 @@ const pool = require("../database/");
 async function getClassifications(){
     // will return (send back) the result of the SQL query, which will be sent to the database server using a pool connection, 
     // when the resultset (data) or an error, is sent back by the database server.
-    return await pool.query("SELECT * FROM public.classification ORDER BY classification_name")
+    return await pool.query("SELECT * FROM public.classification ORDER BY classification_name");
 }
 
 /* ***************************
@@ -67,7 +67,7 @@ async function getReviewsByInvId(vehicle_id) {
       WHERE r.inv_id = $1 
       ORDER BY r.review_date DESC;`,
       [vehicle_id]
-    )
+    );
     return data.rows
   } catch (error) {
     console.error("getReviewsByInvId error " + error);
@@ -93,7 +93,7 @@ async function addNewClassification(classification_id){
 async function checkExistingClassification(class_name){
   try {
     const sql = "SELECT * FROM classification WHERE classification_name = $1"
-    const classification = await pool.query(sql, [class_name])
+    const classification = await pool.query(sql, [class_name]);
     return classification.rowCount
   } catch (error) {
     return error.message
@@ -148,7 +148,18 @@ async function updateInventoryItem(
 ) {
   try {
     const sql =
-      "UPDATE public.inventory SET inv_make = $1, inv_model = $2, inv_description = $3, inv_image = $4, inv_thumbnail = $5, inv_price = $6, inv_year = $7, inv_miles = $8, inv_color = $9, classification_id = $10 WHERE inv_id = $11 RETURNING *"
+      `UPDATE public.inventory SET 
+      inv_make = $1, 
+      inv_model = $2, 
+      inv_description = $3, 
+      inv_image = $4, 
+      inv_thumbnail = $5, 
+      inv_price = $6, 
+      inv_year = $7, 
+      inv_miles = $8, 
+      inv_color = $9, 
+      classification_id = $10 
+      WHERE inv_id = $11 RETURNING *`;
     const data = await pool.query(sql, [
       inv_make,
       inv_model,
@@ -161,10 +172,10 @@ async function updateInventoryItem(
       inv_color,
       classification_id,
       inv_id
-    ])
+    ]);
     return data.rows[0]
   } catch (error) {
-    console.error("model error: " + error)
+    console.error("model error: " + error);
   }
 }
 
@@ -173,18 +184,18 @@ async function updateInventoryItem(
  * ************************** */
 async function deleteInventoryItem(inv_id) {
   try {
-    const sql = "DELETE FROM inventory WHERE inv_id = $1"
-    const data = await pool.query(sql, [inv_id])
+    const sql = "DELETE FROM inventory WHERE inv_id = $1";
+    const data = await pool.query(sql, [inv_id]);
     return data
   } catch (error) {
-    console.error("model error: " + error)
+    console.error("model error: " + error);
   }
 }
 
 async function addNewReview( review_text, inv_id, account_id ){
   try {
-    const sql = `INSERT INTO review (review_text, inv_id, account_id) VALUES ($1, $2, $3) RETURNING *`
-    return await pool.query(sql, [review_text, inv_id, account_id])
+    const sql = `INSERT INTO review (review_text, inv_id, account_id) VALUES ($1, $2, $3) RETURNING *`;
+    return await pool.query(sql, [review_text, inv_id, account_id]);
   } catch (error) {
     return error.message
   }
