@@ -48,6 +48,9 @@ module.exports = {
     // be found in an environment variable. In the production 
     // environment, such a variable will not be stored in our .env file
     connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
   })
     // exports the pool object to be used whenever a database connection is needed.
   module.exports = pool
