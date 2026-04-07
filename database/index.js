@@ -4,7 +4,10 @@ const { Pool } = require("pg")
 
 // allows the sensitive information about the database location and connection 
 // credentials to be stored in a separate location and still be accessed.
-require("dotenv").config()
+// only load .env in development
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 /* ***************
  * Connection Pool
@@ -13,6 +16,8 @@ require("dotenv").config()
  * If - else will make determination which to use
  * *************** */
 // creates a local pool variable to hold the functionality of the "Pool" connection.
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("DATABASE_URL:", process.env.DATABASE_URL ? "exists" : "missing");
 let pool
 
 // test to see if the code exists in a developent environment, as declared in the 
